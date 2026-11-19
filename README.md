@@ -7,6 +7,14 @@ Built from the user research, user stories, sitemap and hi-fi wireframes in the 
 Styled with the **Red Hat Design System** (tokens, Red Hat Display/Text, radius and spacing rules) in a
 luxury-wellness theme: deep spruce (RHDS teal 70–80), gold (RHDS yellow 40), sage (RHDS green 10) and quiet neutrals.
 
+## Project docs
+
+| File | What it is |
+|---|---|
+| [`SPEC.md`](SPEC.md) | Product spec: problem, persona, user stories with acceptance criteria, screens, data model, business rules, test findings |
+| [`AGENTS.md`](AGENTS.md) | How to work in the code: repo map, commands, code and UX rules, definition of done (for coding agents and people) |
+| [`.gitignore`](.gitignore) | Keeps dependencies, build output, native folders and secrets out of git |
+
 ## Run it
 
 You need [Node.js](https://nodejs.org) 20+ and the **Expo Go** app on your phone.

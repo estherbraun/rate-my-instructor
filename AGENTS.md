@@ -1,41 +1,102 @@
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+# AGENTS.md — working in Rate My Instructor
 
-## Expo has changed — do not trust your training data
+Instructions for coding agents (and people) changing this repo. Read this file and `SPEC.md` before you write
+code. `SPEC.md` defines **what** the app does; this file defines **how** to change it.
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+## What this is
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+An Expo / React Native app (SDK 58, Expo Router) that helps people pick fitness classes and rate the
+**instructor separately from the studio**. It is built from the Figma hi-fi screens and final prototype by
+Esther Braun. Data is local mock data; there is no backend.
+
+## Before you start
+
+1. Read `SPEC.md`, especially the user story you are touching (US-1 filter classes, US-2 compare instructors,
+   US-3 rate instructor separately from studio) and its acceptance criteria.
+2. Find the screen in the routes table (`SPEC.md` §5) and the rule in `SPEC.md` §7.
+3. Make the smallest change that meets the acceptance criteria. Don't refactor unrelated code.
+
+## Repo map
+
+```
+src/app/          Screens. Every file is a route (Expo Router). _layout.tsx files define navigators.
+  (tabs)/         Home, Explore (classes, class/[id], booked/[id], instructor/[id], studio/[id], compare),
+                  Rate (index, instructor, studio, posted), Saved, Profile
+  onboarding/     preferences, friends
+  welcome.tsx
+src/components/   ui.tsx (shared RHDS-style controls), layout.tsx (Screen, headers, tab bar),
+                  domain.tsx (ClassCard, InstructorCard)
+src/data/         types.ts (domain types), mock.ts (sample instructors, studios, classes, friends)
+src/lib/logic.ts  Pure product rules: filtering, match score, dealbreakers, suggestions, review scores
+src/state/        AppState.tsx (preferences, saved, bookings, reviews, follows), RateDraft.tsx (rating draft)
+src/theme/        tokens.ts (Red Hat Design System colors, type, spacing, radius → semantic names)
+tests/            logic.test.ts (node:test, run with npm test)
+```
 
 ## Commands
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
-
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+npm install
+npm start            # Expo dev server; scan the QR code with Expo Go
+npm run web          # run in the browser
+npm run typecheck    # tsc --noEmit
+npm test             # unit tests for src/lib/logic.ts
+npm run export:web   # static web build in dist/ (do not commit dist/)
+npx expo install <package>   # ALWAYS use this to add dependencies (SDK-compatible versions)
 ```
 
-Run lint and typecheck before declaring any task done.
+## Code rules
 
-## Navigation & Routing
+- **Product rules go in `src/lib/logic.ts`** as pure functions (no React, no imports from `mock.ts`), with a test
+  in `tests/logic.test.ts`. Screens call these functions; they don't reimplement rules.
+- **Styling uses semantic tokens only.** Import `color`, `space`, `radius` from `@/theme/tokens`. Never write raw
+  hex values or font names in screens. Fonts are Red Hat Display (headings) and Red Hat Text (body).
+- **Reuse components** from `src/components/ui.tsx` (Button, Tag, ChipGroup, Card, Stars, Scale, Segmented,
+  Toggle, Badge…) and `layout.tsx` (Screen, BackHeader, StepProgress, WellnessTabBar) before making new ones.
+  Every screen except Welcome uses `Screen`; screens inside `(tabs)` keep the tab bar.
+- **State** changes go through the reducer in `src/state/AppState.tsx` (`dispatch({ type: … })`). Rating input
+  goes through `RateDraft`.
+- **Types**: keep `src/data/types.ts` as the single source of domain types. TypeScript strict; no `any`.
+- **Import alias**: use `@/…` for anything under `src/`.
 
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
+## UX rules (from the spec and usability testing)
 
-## Building with EAS
+- Touch targets are at least 44 × 44 pt. The primary action sits in the screen footer.
+- Every control has `accessibilityRole` and `accessibilityLabel`. Checkboxes and toggles also set
+  `accessibilityState`.
+- Never leave a dead end: an empty result shows suggestions (`relaxSuggestions`), and every action gives visible
+  feedback.
+- Dealbreakers are **flagged, never hidden**.
+- Instructor and studio scores stay separate everywhere. Never combine them into one number.
+- Required inputs disable the primary button until they are filled. Don't auto-fill a user's ratings.
 
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
+## Expo has changed — do not trust your training data
 
-## Rules
+Expo ships breaking changes every SDK release. Before writing code that touches an Expo, EAS or React Native API:
 
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+1. Read the major version of `expo` in `package.json` (currently 58).
+2. Fetch the matching docs: `https://docs.expo.dev/versions/v58.0.0/`
+3. For anything else, fetch https://docs.expo.dev/llms.txt and follow its links. Never answer from memory.
+
+Other Expo rules:
+- `ios/` and `android/` are generated (Continuous Native Generation). Never create or edit them; configure
+  native behavior in `app.json` and config plugins.
+- Expo Go only includes its bundled native modules. A library with native code needs a development build
+  (`npx expo run:ios|android` or `eas build --profile development`).
+- Prefer Expo modules over third-party libraries. Docs: https://docs.expo.dev/versions/latest/index.md
+- EAS (`npx eas-cli@latest build|submit|update`) builds and ships the app in the cloud.
+
+## Definition of done
+
+1. `npm run typecheck` passes.
+2. `npm test` passes, with new or updated tests for any change to `src/lib/logic.ts`.
+3. The affected flow works end to end in Expo Go or on the web.
+4. `SPEC.md` is updated if behavior changed (including the status column in §9).
+5. Commits are small and say what changed and which user story it serves, for example
+   `US-1: show active filter count on the Filters button`.
+
+## Don't
+
+- Don't add a backend, sign-in or real payments; they are out of scope (`SPEC.md` §4).
+- Don't commit secrets, `.env` files, `node_modules/`, `.expo/` or `dist/` (all are in `.gitignore`).
+- Don't change the meaning of a user story without updating `SPEC.md` first.
