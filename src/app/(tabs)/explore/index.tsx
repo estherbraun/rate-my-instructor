@@ -41,10 +41,12 @@ export default function Explore() {
       {tab === 'Classes' ? (
         <>
           <View style={[styles.row, { marginTop: space.lg, gap: 8 }]}>
-            <Pill icon="clock" label={filters.timeWindow ? `Today · ${filters.timeWindow}` : 'Any time today'} onPress={() => setSheetOpen(true)} />
-            <Pill icon="map-pin" label={`Within ${filters.maxDistanceMi} mi`} onPress={() => setSheetOpen(true)} />
+            <Pill icon="clock" label={filters.timeWindow ?? 'Any time'} onPress={() => setSheetOpen(true)} />
+            <Pill icon="map-pin" label={`${filters.maxDistanceMi} mi`} onPress={() => setSheetOpen(true)} />
+            {/* Usability testing: the icon-only filter button was easy to miss, so it is labeled and shows the active count. */}
             <Pressable accessibilityRole="button" accessibilityLabel={`Filters, ${count} active`} onPress={() => setSheetOpen(true)} style={styles.filterButton}>
-              <Icon name="sliders" size={20} />
+              <Icon name="sliders" size={18} />
+              <Txt variant="bodySmMedium">Filters</Txt>
               {count ? (
                 <View style={styles.count}>
                   <Txt variant="bodyXsMedium">{count}</Txt>
@@ -221,8 +223,8 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   darkPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: color.inverse, borderRadius: radius.pill, paddingHorizontal: 12, height: 36 },
-  filterButton: { marginLeft: 'auto', width: 46, height: 36, borderRadius: radius.pill, borderWidth: 1, borderColor: color.borderStrong, alignItems: 'center', justifyContent: 'center' },
-  count: { position: 'absolute', top: -6, right: -4, minWidth: 18, height: 18, borderRadius: 9, backgroundColor: color.gold, alignItems: 'center', justifyContent: 'center' },
+  filterButton: { marginLeft: 'auto', flexDirection: 'row', gap: 8, minHeight: 44, paddingHorizontal: 14, borderRadius: radius.pill, borderWidth: 1, borderColor: color.borderStrong, alignItems: 'center', justifyContent: 'center' },
+  count: { minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 4, backgroundColor: color.gold, alignItems: 'center', justifyContent: 'center' },
   empty: { width: 96, height: 96, borderRadius: 48, backgroundColor: color.tint, alignItems: 'center', justifyContent: 'center', marginBottom: space.md },
   suggestion: { flexDirection: 'row', alignItems: 'center', gap: 10, borderWidth: 1, borderColor: color.borderStrong, borderRadius: radius.default, paddingHorizontal: 16, height: 60 },
   suggestionCount: { backgroundColor: color.tint, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 },

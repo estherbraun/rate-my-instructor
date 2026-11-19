@@ -7,6 +7,12 @@ Built from the user research, user stories, sitemap and hi-fi wireframes in the 
 Styled with the **Red Hat Design System** (tokens, Red Hat Display/Text, radius and spacing rules) in a
 luxury-wellness theme: deep spruce (RHDS teal 70–80), gold (RHDS yellow 40), sage (RHDS green 10) and quiet neutrals.
 
+## Screens
+
+The app running on the web at phone size: onboarding to Home, filtering, booking, and rating the instructor and studio separately.
+
+![Rate My Instructor screens](docs/screens.png)
+
 ## Project docs
 
 | File | What it is |

@@ -183,7 +183,7 @@ Testing used the Figma prototype (page 7 is the tested version, page 8 is the fi
 
 | Finding | Change | Status in app |
 |---|---|---|
-| The filter icon was easy to miss; the participant scrolled the class list instead | Labeled **Filters** button that shows the active-filter count | **Planned:** the app shows an icon-only button with an accessibility label |
+| The filter icon was easy to miss; the participant scrolled the class list instead | Labeled **Filters** button that shows the active-filter count | **Done** (`explore/index.tsx`) |
 | One tap filled every rating row, so participants couldn't give their own scores | Each rating row fills only when tapped; Next and Submit unlock when the required rows are set | **Done** (`complete` check in `rate/instructor.tsx` and `rate/studio.tsx`) |
 | Cards for other instructors' classes opened the wrong class | Every class, instructor and studio card opens its own detail screen | **Done** (routes use `[id]`) |
 | Save, share and add-to-calendar gave no feedback | Short confirmation message after each action | **Planned** |
